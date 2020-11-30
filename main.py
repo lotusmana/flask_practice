@@ -15,7 +15,7 @@ api = Api(app)
 # Override HTTP methods to define res behavior
 class HelloWorld(Resource):
     def get(self):
-        return {resp: "hello world"}
+        return {"data": "hello world"}
 
 # Register res w/api by class name and route
 api.add_resource(HelloWorld, "/helloworld")
