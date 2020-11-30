@@ -13,12 +13,20 @@ api = Api(app)
 
 # Create classes that inherit from Resource,
 # Override HTTP methods to define res behavior
+# Return values must be JSON SERIALIZABLE
+# Method declaration includes reqd params
 class HelloWorld(Resource):
-    def get(self):
-        return {"data": "hello world"}
+    def get(self, name, age):
+        return {"test name": name,
+                "test age": age
+        }
 
-# Register res w/api by class name and route
-api.add_resource(HelloWorld, "/helloworld")
+    def post(self):
+        return {"data":"posted"}
+
+# Register res w/api by class name, route, & route params
+# Route param names must match method param names above
+api.add_resource(HelloWorld, "/helloworld/<string:name>/<int:age>")
 
 # Start server and flask app on localhost, port 5003
 # Debugger on only while in development environment
