@@ -41,6 +41,12 @@ video_put_args.add_argument("name", type=str, help="name of the video rqd", requ
 video_put_args.add_argument("views", type=int, help="vid views rqd", required=True)
 video_put_args.add_argument("likes", type=int, help="vid likes rqd", required=True)
 
+# Another reqparse object for handling patch updates 
+video_update_args = reqparse.RequestParser()
+video_update_args.add_argument("name", type=str, help="name of the video rqd")
+video_update_args.add_argument("views", type=int, help="vid views rqd")
+video_update_args.add_argument("likes", type=int, help="vid likes rqd")
+
 # Handle requests for video_id not in videos = {}
 # def abort_if_video_id_doesnt_exist(video_id):
 #     if video_id not in videos:
@@ -94,6 +100,26 @@ class Video(Resource):
         #abort_if_video_id_doesnt_exist(video_id)
         #del videos[video_id]
         return '', 204
+
+    @marshal_with(resource_fields)
+    def patch(self, video_id):
+        args = video_update_args.parse_args()
+        result = VideoModel.query.filter_by(id=video_id).first()
+        if not result:
+            abort(404, message="video doesnt exist, unable to update")
+
+        if args['name']:
+            result.name = args['name']
+        if args['views']:
+            result.views = args['views']
+        if args['likes']:
+            result.likes = args['likes']
+        
+        db.session.commit()
+
+        return result
+
+
 
 # Register res w/api by class name, route, & route params <type:label>
 # Route param label must match corresponding method parameters above
